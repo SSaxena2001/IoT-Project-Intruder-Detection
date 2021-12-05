@@ -1,7 +1,8 @@
 const express = require("express");
 const { urlencoded } = require("body-parser");
-const ejs = require("ejs");
+const alert = require("alert");
 const axios = require("axios");
+const ejs = require("ejs");
 
 const app = express();
 
@@ -10,18 +11,27 @@ app.use(urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 //Constants here
-// const API_KEY = "HDOBBOOBNOBQJ7Y2";
-const CHANNEL_ID = "1358279";
+const API_KEY = "HDOBBOOBNOBQJ7Y2";
+const CHANNEL_ID = 1358279;
 const MOTION = 1;
 // const AUTH = 2;
-const URL = `https://api.thingspeak.com/channels/${CHANNEL_ID}/fields/${MOTION}.json`;
+const URL = `https://api.thingspeak.com/channels/${CHANNEL_ID}/fields/${MOTION}.json?results=5`;
 
-//Function for fetching data from thingSpeak api reference and rendering the main page.
-const getApiData = async (res) => {
-  const response = await axios.get(URL);
-  const data = await response.data;
-  console.log(data.feeds);
-  res.render("main");
+const validation = (email, pass) => {
+  const emailregex =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  const passregex = new RegExp(
+    "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
+  );
+  if (email.match(emailregex)) {
+    if (pass.match(passregex)) {
+      return "Success";
+    } else {
+      return "Wrong Password, Try Again!";
+    }
+  } else {
+    return "Wrong Password or Email, Try Again!";
+  }
 };
 
 app.get("/", (req, res) => {
@@ -29,10 +39,31 @@ app.get("/", (req, res) => {
 });
 
 app.post("/", (req, res) => {
-  res.redirect("/auth");
+  const email = req.body.user;
+  const pass = req.body.pass;
+  const validate = validation(email, pass);
+  if (validate === "Success") {
+    res.redirect("/auth");
+  } else {
+    console.log("Error: " + validate);
+    alert("Error: " + validate);
+    res.redirect("/");
+  }
 });
 
-app.get("/auth", async (req, res) => getApiData(res));
+var data;
+
+const getFieldData = async () => {
+  const response = await axios.get(URL);
+  data = response.data;
+  console.log(data);
+};
+
+app.get("/auth", (req, res) => {
+  getFieldData().then(() => {
+    res.render("main", { motion: data });
+  });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

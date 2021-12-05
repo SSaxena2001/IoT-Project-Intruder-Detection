@@ -18,6 +18,10 @@
       <div class="card">
         <div class="inner container">
           <h1 class="heading">Video Feed</h1>
+          <img src="http://192.168.2.12:9000?action=stream" />
+          <div class="chart">
+            <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/1358279/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+          </div>
           <video>
 
           </video>
@@ -26,9 +30,39 @@
       <div class="card info">
         <div class="inner container">
           <h1 class="heading">Security System</h1>
+          <table class="conversion-rate-table">
+            <thead class="table__head">
+            <tr class="table__headers">
+              <th class="header" scope="col">Entry Time</th>
+
+              <th class="header" scope="col">Entry ID</th>
+
+              <th class="header" scope="col">Motion Detected</th>
+
+            </tr>
+            </thead>
+
+            <tbody class="table__content">
+              <% for(let i = 0; i < motion.feeds.length; i++) {%>
+              <tr class="table__row">
+                <td class="row__cell"><%= motion.feeds[i].created_at %></td>
+
+                <td class="row__cell"><%= motion.feeds[i].entry_id %></td>
+
+                <td class="row__cell"><%= motion.feeds[i].field1 > 0 ? "Yes" : "No" %></td>
+              </tr>
+            <% } %>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   </main>
+  <script>
+    function reloadPage(){
+      window.location.reload();
+    }
+    setInterval(reloadPage, 30000);
+  </script>
 </body>
 </html>
