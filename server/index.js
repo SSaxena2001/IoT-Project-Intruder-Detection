@@ -11,7 +11,7 @@ app.use(urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 //Constants here
-const API_KEY = "HDOBBOOBNOBQJ7Y2";
+//const API_KEY = "HDOBBOOBNOBQJ7Y2";
 const CHANNEL_ID = 1358279;
 const MOTION = 1;
 // const AUTH = 2;
@@ -46,7 +46,7 @@ app.post("/", (req, res) => {
     res.redirect("/auth");
   } else {
     console.log("Error: " + validate);
-    alert("Error: " + validate);
+    alert(validate);
     res.redirect("/");
   }
 });
